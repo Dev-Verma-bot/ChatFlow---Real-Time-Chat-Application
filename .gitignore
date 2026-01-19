@@ -1,0 +1,19 @@
+# Ignore the frontend dependencies
+node_modules/
+
+# Ignore the nested server dependencies
+server/node_modules/
+
+# Ignore the environment secrets in both places
+.env
+server/.env
+
+# Ignore production builds
+/build
+/dist
+
+# Ignore logs and system junk
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
