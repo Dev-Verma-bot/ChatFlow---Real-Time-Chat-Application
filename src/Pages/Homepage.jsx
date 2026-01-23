@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 import howItWorksData from '../Data/Homepage_data/How_it_work_data';
 import HowItWorksCard from '../Components/Core/Homepage/How_it_work_card';
 import socketImg from "../assets/Images/Socket_image.png";
+import ChatCTA from '../Components/Core/Homepage/Chat_section';
+import Footer from '../Components/Common/Footer';
 
 const Homepage = () => {
     return (
@@ -114,8 +116,12 @@ const Homepage = () => {
                 </div>
             </div>
 
+                    {/* second last section  */}
+                    <ChatCTA/>
             <div className="h-32 w-full bg-gradient-to-t from-indigo-950/20 to-transparent" />
+        <Footer/>
         </div>
+
     );
 }
 
