@@ -69,10 +69,10 @@ const ChatCTA = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               to="/login"
-              className="group relative overflow-hidden rounded-full
+              className="group text-center relative overflow-hidden rounded-full
               bg-indigo-600 px-10 py-4 text-md font-bold
               transition-all duration-200 hover:bg-indigo-500
-              active:scale-95 shadow-lg shadow-indigo-500/30"
+              active:scale-95 shadow-lg  shadow-indigo-500/30"
             >
               Get Started Free
             </Link>
