@@ -39,6 +39,7 @@ const otp = async (req, res) => {
 
     const mail_res=await send_mail(email,"Verification Mail",`Otp for sign-up -> ${generated_otp}`);
 
+
     if(mail_res){
         console.log("verification Mail send succussfully !");
     }

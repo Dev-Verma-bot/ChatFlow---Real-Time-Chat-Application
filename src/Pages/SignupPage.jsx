@@ -9,7 +9,7 @@ import { sendOtp } from "../Services/operations/authApi";
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [role, setRole] = useState("user");
+  const [role, setRole] = useState("User");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -47,8 +47,8 @@ const SignupPage = () => {
 
           {/* Role Toggle */}
           <div className="flex bg-white/5 p-1 rounded-xl w-48 mb-6 border border-white/10">
-            <button type="button" onClick={() => setRole("user")} className={`flex-1 py-2 text-xs font-black tracking-widest rounded-lg transition-all ${role === "user" ? "bg-purple-600 text-white" : "text-gray-500"}`}>USER</button>
-            <button type="button" onClick={() => setRole("admin")} className={`flex-1 py-2 text-xs font-black tracking-widest rounded-lg transition-all ${role === "admin" ? "bg-purple-600 text-white" : "text-gray-500"}`}>ADMIN</button>
+            <button type="button" onClick={() => setRole("User")} className={`flex-1 py-2 text-xs font-black tracking-widest rounded-lg transition-all ${role === "user" ? "bg-purple-600 text-white" : "text-gray-500"}`}>USER</button>
+            <button type="button" onClick={() => setRole("Admin")} className={`flex-1 py-2 text-xs font-black tracking-widest rounded-lg transition-all ${role === "admin" ? "bg-purple-600 text-white" : "text-gray-500"}`}>ADMIN</button>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

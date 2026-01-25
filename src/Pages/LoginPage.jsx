@@ -1,9 +1,14 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaUser, FaEye, FaEyeSlash, FaLock } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Login } from "../Services/operations/authApi";
+
 
 const LoginPage = () => {
+  const dispatch= useDispatch();
+const navigate= useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const { 
     register, 
@@ -13,6 +18,7 @@ const LoginPage = () => {
 
   const onSubmit = (data) => {
     console.log("Login Data:", data);
+    dispatch(Login(data,navigate));
   };
 
   // Consistent helper for border and error styling
@@ -39,19 +45,19 @@ const LoginPage = () => {
             {/* Username Field */}
             <div className="flex flex-col">
               <div className={`group border-b transition-all ${getBorderClass("username")}`}>
-                <label className="text-xs uppercase text-gray-400 font-bold tracking-wider">Username</label>
+                <label className="text-xs uppercase text-gray-400 font-bold tracking-wider">Email</label>
                 <div className="flex items-center gap-3">
                   <input 
-                    {...register("username", { required: "Username is required" })} 
+                    {...register("email", { required: "Email is required" })} 
                     className="w-full bg-transparent py-3 text-white outline-none text-base" 
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                   />
                   <FaUser className="text-gray-500 group-focus-within:text-purple-400 transition" />
                 </div>
               </div>
-              {errors.username && (
+              {errors.email && (
                 <span className="text-[10px] text-red-500 mt-1 font-bold uppercase tracking-tighter">
-                  {errors.username.message}
+                  {errors.email.message}
                 </span>
               )}
             </div>

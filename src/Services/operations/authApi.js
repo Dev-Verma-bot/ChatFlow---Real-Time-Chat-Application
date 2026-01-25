@@ -1,5 +1,5 @@
 import react from "react";
-import { setLoading, setReset_pass_token, setSign_up_data, setToken } from "../../Slices/AuthSlice";
+import { setLoading, setReset_pass_token, setToken } from "../../Slices/AuthSlice";
 import { ApiConnect } from "../ApiConnect";
 import toast from "react-hot-toast";
 import { auth } from "../Apis";
@@ -69,47 +69,82 @@ export function sendOtp(email, navigate) {
   };
 }
 
-export function signUp(
-  account_type,
-  First_name,
-  Last_name,
-  Email_add,
-  Password,
-  cnfrm_password,
-  Otp,
-  navigate
-
-  
-) {
+export function signUp(signupData, navigate) {
   return async (dispatch) => {
-    const toastId = toast.loading("Loading...")
-    dispatch(setLoading(true))
+    const toastId = toast.loading("Verifying...");
+    dispatch(setLoading(true));
+    
     try {
-      const response = await ApiConnect("POST", auth.sign_up_api, {
-        account_type,
-        First_name,
-        Last_name,
-        Email_add,
-        Password,
-        cnfrm_password,
-        Otp,
-      })
+      // MAPPING DATA INTERNALLY
+      const {
+        firstName,
+        lastName,
+        email,
+        userName,
+        password,
+        gender,
+        role,
+        otp
+      } = signupData;
 
-      console.log("SIGNUP API RESPONSE............", response)
+      const backendData = {
+        first_name: firstName,
+        last_name: lastName,
+        email: email,
+        user_name: userName || email.split("@")[0], // Fallback if userName is missing
+        password: password,
+        gender: gender,
+        role: role,
+        otp: otp, // Passed separately from the OTP component state
+      };
+
+      const response = await ApiConnect("POST", auth.sign_up_api, backendData);
+
+      console.log("SIGNUP API RESPONSE............", response);
 
       if (!response.data.success) {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message);
       }
-      toast.success("Signup Successful")
-      navigate("/login")
+
+      toast.success("Signup Successful");
+      navigate("/login");
     } catch (error) {
-      console.log("SIGNUP API ERROR............", error)
-      toast.error("Signup Failed")
-      navigate("/signup")
+      console.log("SIGNUP API ERROR............", error);
+      const errorMessage = error.response?.data?.message || "Signup Failed";
+      toast.error(errorMessage);
     }
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
-  }
+    
+    dispatch(setLoading(false));
+    toast.dismiss(toastId);
+  };
+}
+
+export function Login(loginData, navigate) {
+  return async (dispatch) => {
+    const toastId = toast.loading("Verifying...");
+    dispatch(setLoading(true));
+    
+    try {
+      const response = await ApiConnect("POST", auth.login_api, loginData);
+
+      console.log("Login response............", response);
+
+      if (!response.data.success) {
+        throw new Error(response.data.message);
+      }
+      dispatch(setToken(response.data.token));
+      dispatch(setUser(response.data.user));
+      toast.success("login Successful");
+      navigate("/dashboard");
+    } catch (error) {
+      console.log("LOGIN API ERROR............", error);
+      const errorMessage = error.response?.data?.message || "Login Failed";
+      toast.error(errorMessage);
+    }
+    
+    dispatch(setLoading(false));
+    toast.dismiss(toastId);
+  };
 }
 
 export function logout(navigate) {
