@@ -7,15 +7,19 @@ const profileSlice = createSlice({
     loading: false,
   },
   reducers: {
-    setUser(state, value) {
-      state.user = value.payload;
+    setUser(state, action) {
+      state.user = action.payload;
+      if (action.payload) {
+        localStorage.setItem("user", JSON.stringify(action.payload));
+      } else {
+        localStorage.removeItem("user");
+      }
     },
-    setLoading(state, value) {
-      state.loading = value.payload;
+    setLoading(state, action) {
+      state.loading = action.payload;
     },
-
   },
 });
 
-export const { setUser, setLoading, setSignupData, clearSignupData } = profileSlice.actions;
+export const { setUser, setLoading } = profileSlice.actions;
 export default profileSlice.reducer;

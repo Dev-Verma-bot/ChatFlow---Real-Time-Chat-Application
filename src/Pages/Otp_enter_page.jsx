@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import OtpInput from "react-otp-input";
-import { FaShieldAlt } from "react-icons/fa";
+import { FaShieldAlt, FaUser } from "react-icons/fa"; // Added FaUser icon
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { sendOtp, signUp } from "../Services/operations/authApi";
 
 const OTPPage = () => {
   const [otp, setOtp] = useState("");
+  const [userName, setUserName] = useState(""); // State for username
   const [timer, setTimer] = useState(59);
   const [error, setError] = useState("");
 
@@ -36,6 +37,11 @@ const OTPPage = () => {
   const handleVerify = (e) => {
     e.preventDefault();
 
+    if (!userName.trim()) {
+      setError("Username is required");
+      return;
+    }
+
     if (otp.length !== 6) {
       setError("Please enter the complete 6-digit code");
       return;
@@ -44,12 +50,12 @@ const OTPPage = () => {
     const finalFormSubmission = {
       ...signupData,
       otp,
+      user_name: userName, // Included as requested
       status: "verified",
     };
 
-    
     console.log("🚀 FINAL DATA SUBMITTED:", finalFormSubmission);
-    dispatch(signUp(finalFormSubmission,navigate));
+    dispatch(signUp(finalFormSubmission, navigate));
   };
 
   if (!signupData) return null;
@@ -58,17 +64,17 @@ const OTPPage = () => {
     <div className="min-h-screen w-full flex items-center justify-center bg-[#05010a] relative overflow-hidden font-sans">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(123,47,247,0.15),_transparent_70%)]"></div>
 
-      <div className="relative z-10 w-full max-w-5xl h-[780px] flex rounded-2xl overflow-hidden bg-[#0a0a0c]/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_80px_rgba(123,47,247,0.25)] mx-4">
+      <div className="relative z-10 w-full max-w-5xl h-[850px] flex rounded-2xl overflow-hidden bg-[#0a0a0c]/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_80px_rgba(123,47,247,0.25)] mx-4">
         
         {/* LEFT */}
         <div className="w-full md:w-[60%] px-10 lg:px-14 py-8 flex flex-col justify-center">
-          <div className="mb-10">
+          <div className="mb-8">
             <div className="w-20 h-20 bg-purple-600/20 border border-purple-500 rounded-2xl flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(123,47,247,0.3)]">
               <FaShieldAlt className="text-purple-400 text-4xl" />
             </div>
 
             <h1 className="text-4xl font-black text-white mb-3 tracking-tight">
-              Verify Email
+              Verify Account
             </h1>
             <p className="text-gray-400 text-base font-medium">
               Code sent to:{" "}
@@ -78,9 +84,30 @@ const OTPPage = () => {
             </p>
           </div>
 
-          <form onSubmit={handleVerify} className="space-y-12">
-            <div className="flex flex-col  items-center md:items-start">
-              
+          <form onSubmit={handleVerify} className="space-y-8">
+            {/* USERNAME INPUT */}
+            <div className="space-y-2">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">
+                Choose Username
+              </label>
+              <div className="relative flex items-center">
+                <FaUser className="absolute left-4 text-purple-400" />
+                <input
+                  type="text"
+                  placeholder="Enter your username"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white outline-none focus:border-purple-500 focus:bg-white/10 transition-all font-medium"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* OTP INPUT */}
+            <div className="flex flex-col items-center md:items-start">
+              <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1 mb-4">
+                Security Code
+              </label>
               <OtpInput
                 value={otp}
                 onChange={(value) => {
@@ -149,7 +176,7 @@ const OTPPage = () => {
             </h2>
             <div className="h-1.5 w-16 bg-white ml-auto mb-8"></div>
             <p className="text-white/60 text-xs font-bold uppercase tracking-widest max-w-[200px] ml-auto">
-              Verify your identity to proceed to the terminal.
+              Verify your identity and set your terminal handle to proceed.
             </p>
           </div>
         </div>

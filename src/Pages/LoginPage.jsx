@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaUser, FaEye, FaEyeSlash, FaLock } from "react-icons/fa";
+import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Login } from "../Services/operations/authApi";
 
-
 const LoginPage = () => {
-  const dispatch= useDispatch();
-const navigate= useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  
   const { 
     register, 
     handleSubmit, 
@@ -17,11 +17,10 @@ const navigate= useNavigate();
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("Login Data:", data);
-    dispatch(Login(data,navigate));
+   console.log("Login Data:", data);
+    dispatch(Login(data, navigate));
   };
 
-  // Consistent helper for border and error styling
   const getBorderClass = (fieldName) => 
     errors[fieldName] 
       ? "border-red-500 shadow-[0_1px_0_0_#ef4444]" 
@@ -29,11 +28,8 @@ const navigate= useNavigate();
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[#05010a] relative overflow-hidden font-sans">
-      
-      {/* Ambient Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(123,47,247,0.15),_transparent_70%)]"></div>
 
-      {/* Card - Height and Max-Width matches Signup exactly */}
       <div className="relative z-10 w-full max-w-5xl h-[780px] flex rounded-2xl overflow-hidden bg-[#0a0a0c]/80 backdrop-blur-2xl border border-white/10 shadow-[0_0_80px_rgba(123,47,247,0.25)] mx-4">
         
         {/* LEFT — Login Form */}
@@ -42,22 +38,24 @@ const navigate= useNavigate();
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
             
-            {/* Username Field */}
+            {/* Identifier Field (Email or Username) */}
             <div className="flex flex-col">
-              <div className={`group border-b transition-all ${getBorderClass("username")}`}>
-                <label className="text-xs uppercase text-gray-400 font-bold tracking-wider">Email</label>
+              <div className={`group border-b transition-all ${getBorderClass("identifier")}`}>
+                <label className="text-xs uppercase text-gray-400 font-bold tracking-wider">
+                  Email or Username
+                </label>
                 <div className="flex items-center gap-3">
                   <input 
-                    {...register("email", { required: "Email is required" })} 
+                    {...register("identifier", { required: "Email or Username is required" })} 
                     className="w-full bg-transparent py-3 text-white outline-none text-base" 
-                    placeholder="Enter your email"
+                    placeholder="Enter email or username"
                   />
                   <FaUser className="text-gray-500 group-focus-within:text-purple-400 transition" />
                 </div>
               </div>
-              {errors.email && (
+              {errors.identifier && (
                 <span className="text-[10px] text-red-500 mt-1 font-bold uppercase tracking-tighter">
-                  {errors.email.message}
+                  {errors.identifier.message}
                 </span>
               )}
             </div>
@@ -89,7 +87,6 @@ const navigate= useNavigate();
               )}
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               className="w-full py-4 mt-6 rounded-xl font-black text-xs tracking-[0.25em] text-white 
@@ -101,7 +98,6 @@ const navigate= useNavigate();
             </button>
           </form>
 
-          {/* Redirect to Signup */}
           <p className="mt-12 text-center text-xs text-gray-500 font-bold tracking-widest uppercase">
             Don't have an account? 
             <Link to={"/signup"} className="ml-2 text-purple-400 hover:text-purple-300 underline decoration-purple-800 underline-offset-8">
@@ -110,12 +106,11 @@ const navigate= useNavigate();
           </p>
         </div>
 
-        {/* RIGHT — Welcome Panel (Diagonal Cut) */}
+        {/* RIGHT — Welcome Panel */}
         <div
           className="hidden md:flex w-[40%] relative items-center justify-center bg-gradient-to-br from-[#7b2ff7] via-[#4b10b0] to-[#12042d] overflow-hidden"
           style={{ clipPath: "polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%)" }}
         >
-          {/* Decorative background glow */}
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 blur-3xl rounded-full translate-x-10 -translate-y-10"></div>
           
           <div className="relative z-10 text-right px-12">

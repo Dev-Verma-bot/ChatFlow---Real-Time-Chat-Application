@@ -80,7 +80,7 @@ export function signUp(signupData, navigate) {
         firstName,
         lastName,
         email,
-        userName,
+        user_name,
         password,
         gender,
         role,
@@ -91,7 +91,7 @@ export function signUp(signupData, navigate) {
         first_name: firstName,
         last_name: lastName,
         email: email,
-        user_name: userName || email.split("@")[0], // Fallback if userName is missing
+        user_name: user_name, 
         password: password,
         gender: gender,
         role: role,

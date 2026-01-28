@@ -9,7 +9,7 @@ import { sendOtp } from "../Services/operations/authApi";
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [role, setRole] = useState("User");
+  const [role, setRole] = useState("User"); // Capitalized default
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -24,12 +24,8 @@ const SignupPage = () => {
   const password = watch("password");
 
   const onSubmit = (data) => {
-    // Merge the form data with the current role
     const finalData = { ...data, role };
-    
-    // 1. Save data to Redux slice
     dispatch(setSign_up_data(finalData));
-    
     dispatch(sendOtp(data.email, navigate));
   };
 
@@ -45,10 +41,30 @@ const SignupPage = () => {
         <div className="w-full md:w-[60%] px-10 lg:px-14 py-8 flex flex-col justify-center overflow-y-auto">
           <h1 className="text-4xl font-black text-white mb-6 tracking-tight">Create Account</h1>
 
-          {/* Role Toggle */}
-          <div className="flex bg-white/5 p-1 rounded-xl w-48 mb-6 border border-white/10">
-            <button type="button" onClick={() => setRole("User")} className={`flex-1 py-2 text-xs font-black tracking-widest rounded-lg transition-all ${role === "user" ? "bg-purple-600 text-white" : "text-gray-500"}`}>USER</button>
-            <button type="button" onClick={() => setRole("Admin")} className={`flex-1 py-2 text-xs font-black tracking-widest rounded-lg transition-all ${role === "admin" ? "bg-purple-600 text-white" : "text-gray-500"}`}>ADMIN</button>
+          {/* Role Toggle - Corrected Selection Logic */}
+          <div className="flex bg-white/5 p-1.5 rounded-xl w-52 mb-8 border border-white/10 relative">
+            <button 
+              type="button" 
+              onClick={() => setRole("User")} 
+              className={`flex-1 py-2.5 text-[10px] font-black tracking-[0.2em] rounded-lg transition-all duration-300 z-10 ${
+                role === "User" 
+                ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]" 
+                : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              USER
+            </button>
+            <button 
+              type="button" 
+              onClick={() => setRole("Admin")} 
+              className={`flex-1 py-2.5 text-[10px] font-black tracking-[0.2em] rounded-lg transition-all duration-300 z-10 ${
+                role === "Admin" 
+                ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]" 
+                : "text-gray-500 hover:text-gray-300"
+              }`}
+            >
+              ADMIN
+            </button>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

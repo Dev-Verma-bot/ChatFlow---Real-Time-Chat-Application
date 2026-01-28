@@ -59,21 +59,28 @@ const otp = async (req, res) => {
 
 const Login = async (req, res) => {
     try {
-        const { email, password } = req.body; 
+        // Renamed email to identifier to reflect it could be either email or username
+        const { identifier, password } = req.body; 
         
-        if (!email || !password) {
+        if (!identifier || !password) {
             return res.status(400).json({
                 success: false,
-                message: "Please pass user email and password!"
+                message: "Please provide email/username and password!"
             });    
         }
 
-        const foundUser = await User.findOne({ email: email });
+        // Search for user where either email OR user_name matches the identifier
+        const foundUser = await User.findOne({
+            $or: [
+                { email: identifier },
+                { user_name: identifier }
+            ]
+        }).populate("profile");
 
         if (!foundUser) {
             return res.status(401).json({
                 success: false,
-                message: "User does not exist with the given mail"
+                message: "Account not found with the provided credentials."
             });    
         }
 
@@ -98,8 +105,9 @@ const Login = async (req, res) => {
         const options = {
             expires: new Date(Date.now() + 3 * 24 * 3600 * 1000), 
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production"
-        };
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "None" 
+        }; 
 
         return res.cookie("token", token, options).status(200).json({
             success: true,
@@ -107,16 +115,21 @@ const Login = async (req, res) => {
             user: {
                 id: foundUser._id,
                 email: foundUser.email,
-                user_name: foundUser.user_name
+                user_name: foundUser.user_name,
+                role: foundUser.role,
+                first_name:foundUser.first_name,
+                last_name:foundUser.last_name,
+                profile:foundUser.profile,
+                profile_pic:foundUser.profile_pic
             },
             message: "Login successful!"
         });
 
     } catch (error) {
-        console.error(error); 
+        console.error("LOGIN ERROR:", error); 
         return res.status(500).json({
             success: false,
-            message: "Error while logging in!"
+            message: "Internal server error during login."
         });
     }
 };
