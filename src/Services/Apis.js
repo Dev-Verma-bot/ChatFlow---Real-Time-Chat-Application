@@ -18,6 +18,11 @@ export const profileEndpoints = {
   GET_INSTRUCTOR_DATA_API: BASE_URL + "/user_profile/instructorDashboard",
 }
 
+export const search_User_endpoints= {
+  GET_SEARCH_USERS_DETAILS_API:BASE_URL+ "/Convoo/search_user/search",
+  GET_CHATTERS_DETAILS_API:BASE_URL+ "/Convoo/search_user/get_chatters"
+}
+
 // STUDENTS ENDPOINTS
 export const studentEndpoints = {
   COURSE_PAYMENT_API: BASE_URL + "/payment/capture_payment",
