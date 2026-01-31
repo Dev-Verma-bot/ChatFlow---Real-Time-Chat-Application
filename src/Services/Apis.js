@@ -17,7 +17,11 @@ export const profileEndpoints = {
   GET_USER_ENROLLED_COURSES_API: BASE_URL + "/user_profile/getEnrolledCourses",
   GET_INSTRUCTOR_DATA_API: BASE_URL + "/user_profile/instructorDashboard",
 }
-
+//Conversatation endpoints 
+export const ConversatationEndpoints={
+  Send_message_api:BASE_URL+"/Convoo/message/send_message/:id",
+  Recieve_message_api:BASE_URL+ "/Convoo/message/recieve_messages/:id"
+}
 export const search_User_endpoints= {
   GET_SEARCH_USERS_DETAILS_API:BASE_URL+ "/Convoo/search_user/search",
   GET_CHATTERS_DETAILS_API:BASE_URL+ "/Convoo/search_user/get_chatters"

@@ -1,42 +1,40 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'; 
 import { useForm } from 'react-hook-form';
 import { HiSearch, HiX } from 'react-icons/hi';
 import { SearchUser, GetChatters } from '../../Services/operations/Search_UserApi';
+import { setSelectedChat } from '../../Slices/ChatSlice'; 
+import { useNavigate } from 'react-router-dom';
 
 const ContactSidebar = () => {
+    const dispatch = useDispatch();
     const { token } = useSelector((state) => state.auth);
-    const [activeTab, setActiveTab] = useState("All");
+    const { selectedChat } = useSelector((state) => state.chat); 
     
-    // TWO STATES: One for the "Master List", one for what is actually shown
+    const [activeTab, setActiveTab] = useState("All");
     const [allChatters, setAllChatters] = useState([]); 
     const [displayedUsers, setDisplayedUsers] = useState([]); 
-    
     const [loading, setLoading] = useState(false);
     const [isSearching, setIsSearching] = useState(false);
+    const navigate= useNavigate();
 
     const tabs = ["All", "Groups", "Individual"];
     const { register, handleSubmit, reset, watch } = useForm();
-
-    // Watch the search input for real-time changes
     const searchFieldValue = watch("searchField");
 
-    // Fetch initial chatters on component mount
-    const fetchInitialChatters = useCallback(async () => {
-        setLoading(true);
-        const result = await GetChatters(token);
-        if (result) {
-            setAllChatters(result);
-            setDisplayedUsers(result);
-        }
-        setLoading(false);
+    useEffect(() => {
+        const fetchInitialChatters = async () => {
+            setLoading(true);
+            const result = await GetChatters(token);
+            if (result) {
+                setAllChatters(result);
+                setDisplayedUsers(result);
+            }
+            setLoading(false);
+        };
+        fetchInitialChatters();
     }, [token]);
 
-    useEffect(() => {
-        fetchInitialChatters();
-    }, [fetchInitialChatters]);
-
-    // AUTO-REVERT: If search bar is emptied, show original chatters immediately
     useEffect(() => {
         if (!searchFieldValue || searchFieldValue.trim() === "") {
             setIsSearching(false);
@@ -50,10 +48,8 @@ const ContactSidebar = () => {
             setDisplayedUsers(allChatters);
             return;
         }
-        
         setLoading(true);
         setIsSearching(true);
-        // Corrected: Passing query directly (ensure your API service removes colons)
         const result = await SearchUser(query, token);
         if (result) {
             setDisplayedUsers(result);
@@ -62,9 +58,15 @@ const ContactSidebar = () => {
     };
 
     const clearSearch = () => {
-        reset({ searchField: "" }); // Clears the input field
+        reset({ searchField: "" }); 
         setIsSearching(false);
-        setDisplayedUsers(allChatters); // Restores original list
+        setDisplayedUsers(allChatters); 
+    };
+
+    // Updated: This function now updates the Redux State
+    const handle_selected_user = (user) => {
+        dispatch(setSelectedChat(user));
+        navigate('./message');
     };
 
     return (
@@ -129,10 +131,20 @@ const ContactSidebar = () => {
                 <div className="space-y-1">
                     {displayedUsers && displayedUsers.length > 0 ? (
                         displayedUsers.map((user) => (
-                            <div key={user._id} className="group relative rounded-xl transition-all hover:bg-white/[0.05] cursor-pointer">
+                            <div 
+                                key={user._id} 
+                                onClick={() => handle_selected_user(user)} // Pass user to Redux
+                                className={`group relative rounded-xl transition-all cursor-pointer ${
+                                    selectedChat?._id === user._id 
+                                    ? "bg-white/[0.1] border border-white/10 shadow-[inset_0_0_10px_rgba(255,255,255,0.02)]" 
+                                    : "hover:bg-white/[0.05] border border-transparent"
+                                }`}
+                            >
                                 <div className="flex items-center gap-2 sm:gap-4 p-2">
                                     <div className="relative shrink-0">
-                                        <div className="h-8 w-8 sm:h-11 sm:w-11 rounded-full p-[1px] bg-white/10">
+                                        <div className={`h-8 w-8 sm:h-11 sm:w-11 rounded-full p-[1px] ${
+                                            selectedChat?._id === user._id ? "bg-purple-500" : "bg-white/10"
+                                        }`}>
                                             <div className="h-full w-full rounded-full bg-[#05010a] overflow-hidden">
                                                 <img 
                                                     src={user.profile_pic || `https://api.dicebear.com/7.x/initials/svg?seed=${user.first_name}`} 
@@ -145,7 +157,9 @@ const ContactSidebar = () => {
 
                                     <div className="flex flex-1 flex-col min-w-0">
                                         <div className="flex justify-between items-center">
-                                            <h4 className="text-[10px] sm:text-[12px] font-bold text-white/90 truncate uppercase tracking-tight">
+                                            <h4 className={`text-[10px] sm:text-[12px] font-bold truncate uppercase tracking-tight ${
+                                                selectedChat?._id === user._id ? "text-purple-400" : "text-white/90"
+                                            }`}>
                                                 {user.first_name} {user.last_name}
                                             </h4>
                                         </div>

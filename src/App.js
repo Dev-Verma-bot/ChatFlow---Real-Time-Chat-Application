@@ -7,6 +7,7 @@ import Verify_logged_in from "./Auth/Verify_logged_in";
 import ProtectedRoute from "./Auth/ProtectedRoute";
 
 // Pages
+import MessageBox from "./Pages/MessageBox";
 import Homepage from "./Pages/Homepage";
 import LoginPage from "./Pages/LoginPage";
 import SignupPage from "./Pages/SignupPage";
@@ -44,6 +45,7 @@ const App = () => {
             <Route index element={<DashboardHome />} />
             
             <Route path="profile" element={<Profile />} />
+            <Route path="message" element={<MessageBox/>}/>
           </Route>
 
 

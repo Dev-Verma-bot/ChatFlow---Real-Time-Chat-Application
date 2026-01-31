@@ -1,10 +1,14 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import TrueFocus from './TrueFocus';
+import { setSelectedChat } from "../../../Slices/ChatSlice";
 
 const DashboardHome = () => {
     const { user } = useSelector((state) => state.profile);
-
+    const dispatch= useDispatch();
+    useEffect(()=>{
+        dispatch(setSelectedChat(null));
+    })
     return (
 
         <div className="relative flex flex-col items-center justify-center h-full w-full bg-[#05010a] m-0 p-0 overflow-hidden">
