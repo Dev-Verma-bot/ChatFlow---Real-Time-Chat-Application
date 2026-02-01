@@ -17,11 +17,17 @@ export function sendMessage(recipientId, messageContent, token) {
         { Authorization: `Bearer ${token}` }
       );
 
+      // --- DEBUG LOG ---
+      console.log("SEND_MESSAGE_RESPONSE:", response.data);
+
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
 
-      dispatch(addMessage(response.data.newMessage));
+      // Check if data exists before dispatching to prevent the "undefined" error
+      if (response.data.data) {
+        dispatch(addMessage(response.data.data));
+      }
       
     } catch (error) {
       console.log("SEND_MESSAGE_API_ERROR............", error);
@@ -43,10 +49,13 @@ export function getMessages(chatId, token) {
         { Authorization: `Bearer ${token}` }
       );
 
+      // --- DEBUG LOG ---
+      console.log("GET_MESSAGES_RESPONSE:", response.data);
+
       if (!response.data.success) {
         throw new Error(response.data.message);
       }
-
+      
       dispatch(setMessages(response.data.messages));
 
     } catch (error) {

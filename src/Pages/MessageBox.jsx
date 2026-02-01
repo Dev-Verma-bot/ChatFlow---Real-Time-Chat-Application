@@ -11,6 +11,7 @@ const MessageBox = () => {
     const scrollRef = useRef(null);
     const { register, handleSubmit, reset } = useForm();
 
+    // Auto-scroll logic
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -27,7 +28,6 @@ const MessageBox = () => {
         reset();
     };
 
-    // Helper to format Date Dividers with Full Year
     const formatDividerDate = (dateString) => {
         const date = new Date(dateString);
         const today = new Date();
@@ -37,11 +37,8 @@ const MessageBox = () => {
         if (date.toDateString() === today.toDateString()) return "Today";
         if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
         
-        // Formats to: 24 Jan 2026
         return date.toLocaleDateString('en-GB', { 
-            day: 'numeric', 
-            month: 'short', 
-            year: 'numeric' 
+            day: 'numeric', month: 'short', year: 'numeric' 
         });
     };
 
@@ -54,13 +51,13 @@ const MessageBox = () => {
             {/* HEADER */}
             <div className="flex items-center justify-between p-4 sm:px-8 border-b border-white/5 bg-white/[0.02] backdrop-blur-xl z-10">
                 <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full p-[1.5px] bg-gradient-to-tr from-purple-500 to-indigo-500 shadow-[0_0_15px_rgba(168,85,247,0.2)]">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full p-[1.5px] bg-gradient-to-tr from-purple-500 to-indigo-500">
                         <div className="h-full w-full rounded-full bg-[#05010a] overflow-hidden">
                             <img src={selectedChat.profile_pic} alt="profile" className="h-full w-full object-cover" />
                         </div>
                     </div>
                     <div className="flex flex-col">
-                        <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight leading-none mb-1">
+                        <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight mb-1">
                             {selectedChat.first_name} {selectedChat.last_name}
                         </h2>
                         <span className="text-[10px] text-purple-400 font-bold tracking-wider">@{selectedChat.user_name}</span>
@@ -76,17 +73,23 @@ const MessageBox = () => {
             <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 custom-scrollbar z-10">
                 {messages && messages.length > 0 ? (
                     messages.map((msg, index) => {
-                        const isSender = msg.sender !== selectedChat._id;
+                        // Safety Guard
+                        if (!msg) return null;
+
+                        // ALIGNMENT LOGIC
+                        // If sender_id matches the person we are chatting with, it goes on the LEFT.
+                        // If it doesn't match, it means WE sent it, so it goes on the RIGHT.
+                        const isFromMe = msg.sender_id !== selectedChat._id;
                         
-                        // Date Divider Logic
                         const currentDate = new Date(msg.createdAt).toDateString();
-                        const prevDate = index > 0 ? new Date(messages[index - 1].createdAt).toDateString() : null;
+                        const prevDate = index > 0 ? new Date(messages[index - 1]?.createdAt).toDateString() : null;
                         const showDivider = currentDate !== prevDate;
 
                         return (
-                            <React.Fragment key={index}>
+                            <div key={msg._id || index} className="flex flex-col gap-6">
+                                {/* DATE DIVIDER */}
                                 {showDivider && (
-                                    <div className="flex items-center justify-center my-10 relative">
+                                    <div className="flex items-center justify-center my-4 relative">
                                         <div className="absolute w-full h-[1px] bg-white/5"></div>
                                         <span className="relative px-5 py-1.5 rounded-full bg-[#05010a] border border-white/10 text-[9px] font-black uppercase tracking-[0.25em] text-gray-400 shadow-2xl">
                                             {formatDividerDate(msg.createdAt)}
@@ -94,20 +97,23 @@ const MessageBox = () => {
                                     </div>
                                 )}
 
-                                <div className={`flex ${isSender ? "justify-end" : "justify-start"}`}>
-                                    <div className={`max-w-[75%] sm:max-w-[60%] px-4 py-3 rounded-2xl shadow-sm transition-all hover:shadow-purple-500/5 ${
-                                        isSender 
+                                {/* BUBBLE WRAPPER */}
+                                <div className={`flex ${isFromMe ? "justify-end" : "justify-start"}`}>
+                                    <div className={`max-w-[75%] sm:max-w-[60%] px-4 py-3 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-purple-500/5 ${
+                                        isFromMe 
                                         ? "bg-gradient-to-br from-purple-600 to-indigo-700 text-white rounded-tr-none shadow-purple-900/20" 
-                                        : "bg-white/[0.05] border border-white/10 text-gray-200 rounded-tl-none"
+                                        : "bg-white/[0.06] border border-white/10 text-gray-200 rounded-tl-none"
                                     }`}>
                                         <p className="text-sm font-medium leading-relaxed break-words">{msg.message}</p>
-                                        <div className={`text-[9px] mt-1.5 font-bold uppercase tracking-tighter opacity-40 ${isSender ? "text-right" : "text-left"}`}>
+                                        <div className={`text-[9px] mt-1.5 font-bold uppercase tracking-tighter opacity-40 ${isFromMe ? "text-right" : "text-left"}`}>
                                             {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                     </div>
                                 </div>
-                                <div ref={scrollRef} />
-                            </React.Fragment>
+                                
+                                {/* Only place the scroll anchor at the very last message */}
+                                {index === messages.length - 1 && <div ref={scrollRef} />}
+                            </div>
                         );
                     })
                 ) : (
