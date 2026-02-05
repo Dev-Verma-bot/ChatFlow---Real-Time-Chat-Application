@@ -4,7 +4,6 @@ const chatSlice = createSlice({
   name: "chat",
   initialState: {
     chats: [],
-    // Retrieve from localStorage on initialization so it survives reload
     selectedChat: localStorage.getItem("selectedChat") 
       ? JSON.parse(localStorage.getItem("selectedChat")) 
       : null,
@@ -17,7 +16,6 @@ const chatSlice = createSlice({
     },
     setSelectedChat: (state, action) => {
       state.selectedChat = action.payload;
-      // Save to localStorage whenever a chat is selected
       if (action.payload) {
         localStorage.setItem("selectedChat", JSON.stringify(action.payload));
       } else {
@@ -27,13 +25,28 @@ const chatSlice = createSlice({
     setMessages: (state, action) => {
       state.messages = action.payload;
     },
+    
+    // UPDATED FUNCTIONALITY
     addMessage: (state, action) => {
-      state.messages.push(action.payload);
+      const new_message = action.payload;
+      
+      // 1. Only add to messages array if the message belongs to the currently open chat
+      // This prevents messages from "Chat B" appearing while you are looking at "Chat A"
+      if (state.selectedChat && 
+         (new_message.sender_id === state.selectedChat._id || 
+          new_message.receiver_id === state.selectedChat._id)) {
+        
+        state.messages.push(new_message);
+      } else {
+        // 2. If the message is for a different chat, add it to notifications
+        state.notification.push(new_message);
+      }
     },
-    // Useful for a 'Clear Chat' or 'Logout' action
+
     resetChatState: (state) => {
         state.selectedChat = null;
         state.messages = [];
+        state.notification = [];
         localStorage.removeItem("selectedChat");
     }
   },

@@ -1,5 +1,6 @@
 const Conversation_room = require("../Modals/Conversatation_room");
 const Message = require("../Modals/Message");
+const { getRecieverSocketID, io } = require("../Socket/Socket");
 
 const send_message = async (req, res) => {
     try {
@@ -37,6 +38,11 @@ const send_message = async (req, res) => {
             chat_room.messages.push(new_message._id);
         }
         // socket io function 
+        const recieverSocket_id= getRecieverSocketID(receiver_id);
+        console.log('reciever socket id here -> ',recieverSocket_id);
+        if(recieverSocket_id){
+            io.to(recieverSocket_id).emit('newMessage',new_message);
+        }
 
          await chat_room.save();
 

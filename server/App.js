@@ -9,8 +9,9 @@ const cors = require("cors");
 const User_route = require("./Routes/User_route");
 const Convsation_route = require("./Routes/Conversation_route");
 const Search_route = require("./Routes/User_handler_route");
+const { App, server } = require('./Socket/Socket');
 
-const App = express();
+
 const PORT = process.env.PORT_NO || 4000;
 
 // 1. DATABASE & CLOUD CONNECTIONS
@@ -44,6 +45,6 @@ App.get("/", (req, res) => {
 });
 
 // 4. START SERVER (Always at the end)
-App.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server started at port no ${PORT}`);
 });

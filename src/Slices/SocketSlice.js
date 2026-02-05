@@ -4,7 +4,7 @@ const socketSlice = createSlice({
   name: "socket",
   initialState: {
     isConnected: false,
-    onlineUsers: [], // Array of user IDs sent from server
+    onlineUsers: [], 
   },
   reducers: {
     setConnected: (state, action) => {
