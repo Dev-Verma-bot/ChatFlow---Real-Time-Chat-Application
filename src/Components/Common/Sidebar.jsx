@@ -18,7 +18,6 @@ const Sidebar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/');
   };
 
   const activeStyle = (path) => 

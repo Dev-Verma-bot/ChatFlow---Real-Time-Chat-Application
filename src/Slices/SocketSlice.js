@@ -11,7 +11,7 @@ const socketSlice = createSlice({
       state.isConnected = action.payload;
     },
     setOnlineUsers: (state, action) => {
-      state.onlineUsers = action.payload;
+     state.onlineUsers = [...action.payload];
     },
   },
 });

@@ -8,10 +8,16 @@ const MessageBox = () => {
     const dispatch = useDispatch();
     const { selectedChat, messages } = useSelector((state) => state.chat);
     const { token } = useSelector((state) => state.auth);
+    
+    // 1. Pull onlineUsers from the socket slice
+    const { onlineUsers } = useSelector((state) => state.socket);
+    
+    // 2. Determine if the current selected user is online
+    const isOnline = onlineUsers?.includes(String(selectedChat?._id));
+
     const scrollRef = useRef(null);
     const { register, handleSubmit, reset } = useForm();
 
-    // Auto-scroll logic
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
@@ -51,16 +57,26 @@ const MessageBox = () => {
             {/* HEADER */}
             <div className="flex items-center justify-between p-4 sm:px-8 border-b border-white/5 bg-white/[0.02] backdrop-blur-xl z-10">
                 <div className="flex items-center gap-4">
-                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full p-[1.5px] bg-gradient-to-tr from-purple-500 to-indigo-500">
+                    <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-full p-[1.5px] bg-gradient-to-tr from-purple-500 to-indigo-500">
                         <div className="h-full w-full rounded-full bg-[#05010a] overflow-hidden">
                             <img src={selectedChat.profile_pic} alt="profile" className="h-full w-full object-cover" />
                         </div>
+                        {/* 3. GREEN DOT ON AVATAR */}
+                        {isOnline && (
+                            <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 border-2 border-[#05010a] rounded-full"></div>
+                        )}
                     </div>
                     <div className="flex flex-col">
-                        <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight mb-1">
+                        <h2 className="text-sm sm:text-base font-black text-white uppercase tracking-tight">
                             {selectedChat.first_name} {selectedChat.last_name}
                         </h2>
-                        <span className="text-[10px] text-purple-400 font-bold tracking-wider">@{selectedChat.user_name}</span>
+                        {/* 4. ONLINE STATUS TEXT */}
+                        <div className="flex items-center gap-1.5">
+                            <span className={`text-[10px] font-bold tracking-wider ${isOnline ? "text-green-400" : "text-gray-500"}`}>
+                                {isOnline ? "ONLINE" : ""}
+                            </span>
+                            <span className="text-[10px] text-purple-400/50 font-bold tracking-wider">@{selectedChat.user_name}</span>
+                        </div>
                     </div>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400">
@@ -73,33 +89,25 @@ const MessageBox = () => {
             <div className="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 custom-scrollbar z-10">
                 {messages && messages.length > 0 ? (
                     messages.map((msg, index) => {
-                        // Safety Guard
                         if (!msg) return null;
-
-                        // ALIGNMENT LOGIC
-                        // If sender_id matches the person we are chatting with, it goes on the LEFT.
-                        // If it doesn't match, it means WE sent it, so it goes on the RIGHT.
                         const isFromMe = msg.sender_id !== selectedChat._id;
-                        
                         const currentDate = new Date(msg.createdAt).toDateString();
                         const prevDate = index > 0 ? new Date(messages[index - 1]?.createdAt).toDateString() : null;
                         const showDivider = currentDate !== prevDate;
 
                         return (
                             <div key={msg._id || index} className="flex flex-col gap-6">
-                                {/* DATE DIVIDER */}
                                 {showDivider && (
                                     <div className="flex items-center justify-center my-4 relative">
                                         <div className="absolute w-full h-[1px] bg-white/5"></div>
-                                        <span className="relative px-5 py-1.5 rounded-full bg-[#05010a] border border-white/10 text-[9px] font-black uppercase tracking-[0.25em] text-gray-400 shadow-2xl">
+                                        <span className="relative px-5 py-1.5 rounded-full bg-[#05010a] border border-white/10 text-[9px] font-black uppercase tracking-[0.25em] text-gray-400">
                                             {formatDividerDate(msg.createdAt)}
                                         </span>
                                     </div>
                                 )}
 
-                                {/* BUBBLE WRAPPER */}
                                 <div className={`flex ${isFromMe ? "justify-end" : "justify-start"}`}>
-                                    <div className={`max-w-[75%] sm:max-w-[60%] px-4 py-3 rounded-2xl shadow-sm transition-all duration-300 hover:shadow-purple-500/5 ${
+                                    <div className={`max-w-[75%] sm:max-w-[60%] px-4 py-3 rounded-2xl shadow-sm transition-all duration-300 ${
                                         isFromMe 
                                         ? "bg-gradient-to-br from-purple-600 to-indigo-700 text-white rounded-tr-none shadow-purple-900/20" 
                                         : "bg-white/[0.06] border border-white/10 text-gray-200 rounded-tl-none"
@@ -110,8 +118,6 @@ const MessageBox = () => {
                                         </div>
                                     </div>
                                 </div>
-                                
-                                {/* Only place the scroll anchor at the very last message */}
                                 {index === messages.length - 1 && <div ref={scrollRef} />}
                             </div>
                         );

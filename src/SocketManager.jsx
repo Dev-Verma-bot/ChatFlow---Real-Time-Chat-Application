@@ -5,7 +5,6 @@ import { setConnected, setOnlineUsers } from "../src/Slices/SocketSlice";
 import { addMessage } from "../src/Slices/ChatSlice";
 import notify from "../src/assets/notification.mp3"; 
 
-// Create a single audio instance outside the component to avoid memory leaks
 const notificationSound = new Audio(notify);
 
 const SocketManager = () => {
@@ -14,8 +13,7 @@ const SocketManager = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        // 1. "Unlock" audio on the first user interaction
-        // This solves the "Playback blocked" issue
+        // 1. Audio Interaction Unlock
         const unlockAudio = () => {
             notificationSound.play().then(() => {
                 notificationSound.pause();
@@ -25,8 +23,8 @@ const SocketManager = () => {
         };
         window.addEventListener('click', unlockAudio);
 
+        // 2. CONNECTION LOGIC (Only if user exists)
         if (user) {
-            // 2. Use user._id (common in MongoDB) or fallback to user.id
             const socket = io(process.env.REACT_APP_BASE_URL, {
                 query: { 
                     userId: String(user._id || user.id) 
@@ -35,27 +33,40 @@ const SocketManager = () => {
             socketRef.current = socket;
 
             socket.on("connect", () => dispatch(setConnected(true)));
-            socket.on("getOnlineUsers", (users) => dispatch(setOnlineUsers(users)));
-            socket.on("disconnect", () => dispatch(setConnected(false)));
-
-            socket.on("newMessage", (new_message) => {
-                // 3. Play sound ONLY if the message is from someone else
-                const currentUserId = String(user._id || user.id);
-                if (String(new_message.sender_id) !== currentUserId) {
-                    notificationSound.currentTime = 0; // Reset sound to start
-                    notificationSound.play().catch(e => console.log("Audio play blocked: user must click page first."));
-                }
-
-                console.log("new message ->", new_message);
-                dispatch(addMessage(new_message));
+            
+            socket.on("getOnlineUsers", (users) => {
+                console.log("Online users list received:", users);
+                dispatch(setOnlineUsers(users));
             });
 
-            return () => {
-                socket.close();
-                socketRef.current = null;
-                window.removeEventListener('click', unlockAudio);
-            };
+            socket.on("disconnect", () => {
+                dispatch(setConnected(false));
+            });
+
+            socket.on("newMessage", (new_message) => {
+                const currentUserId = String(user._id || user.id);
+                if (String(new_message.sender_id) !== currentUserId) {
+                    notificationSound.currentTime = 0;
+                    notificationSound.play().catch(() => {});
+                }
+                dispatch(addMessage(new_message));
+            });
         }
+
+        // 3. THE FIX: Cleanup is OUTSIDE the 'if(user)' block
+        // This runs every time 'user' changes, ensuring that if user becomes null,
+        // the previous socket connection is closed.
+        return () => {
+            if (socketRef.current) {
+                console.log("Cleaning up: Disconnecting socket...");
+                socketRef.current.disconnect(); 
+                socketRef.current = null;
+            }
+            // Reset state so UI cleans up immediately
+            dispatch(setConnected(false));
+            dispatch(setOnlineUsers([]));
+            window.removeEventListener('click', unlockAudio);
+        };
     }, [user, dispatch]);
 
     return null;

@@ -4,6 +4,8 @@ import { ApiConnect } from "../ApiConnect";
 import toast from "react-hot-toast";
 import { auth } from "../Apis";
 import {setUser} from "../../Slices/ProfileSlice"
+import { setConnected, setOnlineUsers } from "../../Slices/SocketSlice";
+import { useSelector } from "react-redux";
 // import logo
 
 export function getPasswordResetToken(email , setEmailSent) {
@@ -146,15 +148,20 @@ export function Login(loginData, navigate) {
     toast.dismiss(toastId);
   };
 }
-
 export function logout(navigate) {
-  return (dispatch) => {
-    dispatch(setToken(null))
-    dispatch(setUser(null))
-    // dispatch(resetCart())
-    localStorage.removeItem("token")
-    localStorage.removeItem("user")
-    toast.success("Logged Out")
-    navigate("/")
-  }
+  return async (dispatch) => {
+    try {
+     
+
+      dispatch(setOnlineUsers([])); 
+      dispatch(setConnected(false));
+      dispatch(setUser(null));
+      dispatch(setToken(null));
+      localStorage.clear();
+      toast.success("Logged Out");
+      navigate("/");
+    } catch (error) {
+      console.log("Logout Error", error);
+    }
+  };
 }
