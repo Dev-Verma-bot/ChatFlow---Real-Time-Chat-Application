@@ -8,7 +8,10 @@ const chatSlice = createSlice({
       ? JSON.parse(localStorage.getItem("selectedChat")) 
       : null,
     messages: [],
-    notification: [],
+    // Load notifications from localStorage on startup
+    notification: localStorage.getItem("notifications")
+      ? JSON.parse(localStorage.getItem("notifications"))
+      : [],
   },
   reducers: {
     setChats: (state, action) => {
@@ -16,8 +19,16 @@ const chatSlice = createSlice({
     },
     setSelectedChat: (state, action) => {
       state.selectedChat = action.payload;
+      
       if (action.payload) {
         localStorage.setItem("selectedChat", JSON.stringify(action.payload));
+        
+        // Remove notifications for the user being selected
+        state.notification = state.notification.filter(
+            (notif) => notif.sender_id !== action.payload._id
+        );
+        // Sync filtered list to localStorage
+        localStorage.setItem("notifications", JSON.stringify(state.notification));
       } else {
         localStorage.removeItem("selectedChat");
       }
@@ -26,20 +37,24 @@ const chatSlice = createSlice({
       state.messages = action.payload;
     },
     
-    // UPDATED FUNCTIONALITY
+    setNotification: (state, action) => {
+      state.notification = action.payload;
+      // Sync manual updates to localStorage
+      localStorage.setItem("notifications", JSON.stringify(action.payload));
+    },
+    
     addMessage: (state, action) => {
       const new_message = action.payload;
       
-      // 1. Only add to messages array if the message belongs to the currently open chat
-      // This prevents messages from "Chat B" appearing while you are looking at "Chat A"
       if (state.selectedChat && 
          (new_message.sender_id === state.selectedChat._id || 
           new_message.receiver_id === state.selectedChat._id)) {
         
         state.messages.push(new_message);
       } else {
-        // 2. If the message is for a different chat, add it to notifications
         state.notification.push(new_message);
+        // Sync new notification to localStorage
+        localStorage.setItem("notifications", JSON.stringify(state.notification));
       }
     },
 
@@ -48,9 +63,18 @@ const chatSlice = createSlice({
         state.messages = [];
         state.notification = [];
         localStorage.removeItem("selectedChat");
+        localStorage.removeItem("notifications"); // Clear notifications on reset
     }
   },
 });
 
-export const { setChats, setSelectedChat, setMessages, addMessage, resetChatState } = chatSlice.actions;
+export const { 
+    setChats, 
+    setSelectedChat, 
+    setMessages, 
+    setNotification, 
+    addMessage, 
+    resetChatState 
+} = chatSlice.actions;
+
 export default chatSlice.reducer;

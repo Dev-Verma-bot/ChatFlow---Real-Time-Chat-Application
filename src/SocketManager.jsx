@@ -13,7 +13,7 @@ const SocketManager = () => {
     const socketRef = useRef(null);
 
     useEffect(() => {
-        // 1. Audio Interaction Unlock
+        // 1. Audio Interaction Unlock logic
         const unlockAudio = () => {
             notificationSound.play().then(() => {
                 notificationSound.pause();
@@ -23,48 +23,64 @@ const SocketManager = () => {
         };
         window.addEventListener('click', unlockAudio);
 
-        // 2. CONNECTION LOGIC (Only if user exists)
+        // 2. CONNECTION & LOGOUT LOGIC
         if (user) {
-            const socket = io(process.env.REACT_APP_BASE_URL, {
-                query: { 
-                    userId: String(user._id || user.id) 
-                }
-            });
-            socketRef.current = socket;
+            // Only create a socket if one doesn't exist already
+            if (!socketRef.current) {
+                const socket = io(process.env.REACT_APP_BASE_URL, {
+                    query: { 
+                        userId: String(user._id || user.id) 
+                    },
+                    transports: ['websocket'], // Force websocket for instant status updates
+                    reconnection: true
+                });
 
-            socket.on("connect", () => dispatch(setConnected(true)));
-            
-            socket.on("getOnlineUsers", (users) => {
-                console.log("Online users list received:", users);
-                dispatch(setOnlineUsers(users));
-            });
+                socketRef.current = socket;
 
-            socket.on("disconnect", () => {
-                dispatch(setConnected(false));
-            });
+                socket.on("connect", () => {
+                    console.log("Socket Connected");
+                    dispatch(setConnected(true));
+                });
+                
+                socket.on("getOnlineUsers", (users) => {
+                    console.log("Syncing Online Users:", users);
+                    dispatch(setOnlineUsers(users));
+                });
 
-            socket.on("newMessage", (new_message) => {
-                const currentUserId = String(user._id || user.id);
-                if (String(new_message.sender_id) !== currentUserId) {
-                    notificationSound.currentTime = 0;
-                    notificationSound.play().catch(() => {});
-                }
-                dispatch(addMessage(new_message));
-            });
-        }
+                socket.on("disconnect", (reason) => {
+                    console.log("Socket Disconnected:", reason);
+                    dispatch(setConnected(false));
+                });
 
-        // 3. THE FIX: Cleanup is OUTSIDE the 'if(user)' block
-        // This runs every time 'user' changes, ensuring that if user becomes null,
-        // the previous socket connection is closed.
-        return () => {
+                socket.on("newMessage", (new_message) => {
+                    const currentUserId = String(user._id || user.id);
+                    // Play sound only if I am the receiver
+                    if (String(new_message.sender_id) !== currentUserId) {
+                        notificationSound.currentTime = 0;
+                        notificationSound.play().catch((e) => console.log("Sound error:", e));
+                    }
+                    dispatch(addMessage(new_message));
+                });
+            }
+        } else {
+            // 3. EXPLICIT LOGOUT CLEANUP
+            // This runs immediately when user becomes null (Logout)
             if (socketRef.current) {
-                console.log("Cleaning up: Disconnecting socket...");
+                console.log("User logged out: Killing socket connection...");
                 socketRef.current.disconnect(); 
                 socketRef.current = null;
             }
-            // Reset state so UI cleans up immediately
+            // Clear lists immediately in Redux
             dispatch(setConnected(false));
             dispatch(setOnlineUsers([]));
+        }
+
+        // 4. COMPONENT UNMOUNT CLEANUP
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
             window.removeEventListener('click', unlockAudio);
         };
     }, [user, dispatch]);
