@@ -1,50 +1,54 @@
-# Convoo Chat Application
+<div align="center">
 
-Convoo is a full-stack real-time chat application built with React, Redux Toolkit, Express, MongoDB, and Socket.IO. It supports OTP-based signup, JWT authentication, one-to-one messaging, user search, and live online presence updates.
+# Convoo
 
-## Overview
+Real-time one-to-one chat application built with React, Redux Toolkit, Express, MongoDB, and Socket.IO.
 
-This repository contains:
+<p>
+  <img src="https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React badge" />
+  <img src="https://img.shields.io/badge/Backend-Express-111111?style=for-the-badge&logo=express&logoColor=white" alt="Express badge" />
+  <img src="https://img.shields.io/badge/Database-MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB badge" />
+  <img src="https://img.shields.io/badge/Realtime-Socket.IO-010101?style=for-the-badge&logo=socketdotio&logoColor=white" alt="Socket.IO badge" />
+</p>
 
-- A React frontend in the project root
-- An Express backend inside `server/`
-- Real-time messaging powered by Socket.IO
-- MongoDB for persistent user, profile, conversation, and message data
+</div>
 
-## Features
+## Preview
 
-- Email OTP signup flow
+<img src="./Pictures/Screenshot%202026-03-25%20141152.png" alt="Convoo application preview" width="100%" />
+
+## About The Project
+
+Convoo is a full-stack chatting platform focused on fast, clean, real-time communication. The application combines a modern React interface with an Express and Socket.IO backend to deliver authentication, live messaging, online presence tracking, and a dashboard-style chat experience.
+
+The repository contains the frontend in the project root and the backend inside `server/`.
+
+## Highlights
+
+- OTP-based signup flow
 - Login with email or username
-- JWT-based protected routes
-- User search
-- One-to-one chat conversations
-- Real-time incoming messages
-- Online user status
+- JWT-protected routes
+- User search for starting conversations
+- One-to-one real-time messaging
+- Online user presence updates
 - Notification sound for new messages
-- Dashboard with profile and messaging views
+- Dashboard with profile and chat views
 
-## Project Structure
+## Screenshots
 
-```text
-.
-+-- package.json
-+-- public/
-+-- src/
-|   +-- Components/
-|   +-- Pages/
-|   +-- Services/
-|   +-- Slices/
-|   `-- SocketManager.jsx
-`-- server/
-    +-- App.js
-    +-- Configuration/
-    +-- Controllers/
-    +-- Middlewares/
-    +-- Modals/
-    +-- Routes/
-    +-- Socket/
-    `-- Utils/
-```
+<table>
+  <tr>
+    <td><img src="./Pictures/Screenshot%202026-03-25%20141152.png" alt="Convoo screenshot 1" width="100%" /></td>
+    <td><img src="./Pictures/Screenshot%202026-03-25%20141210.png" alt="Convoo screenshot 2" width="100%" /></td>
+  </tr>
+  <tr>
+    <td><img src="./Pictures/Screenshot%202026-03-25%20141217.png" alt="Convoo screenshot 3" width="100%" /></td>
+    <td><img src="./Pictures/Screenshot%202026-03-25%20141435.png" alt="Convoo screenshot 4" width="100%" /></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="./Pictures/Screenshot%202026-03-25%20141459.png" alt="Convoo screenshot 5" width="100%" /></td>
+  </tr>
+</table>
 
 ## Tech Stack
 
@@ -71,38 +75,32 @@ This repository contains:
 - Socket.IO
 - Express File Upload
 
-## Environment Variables
+## Project Structure
 
-Create two environment files.
-
-### Frontend `.env`
-
-Create `.env` in the project root:
-
-```env
-REACT_APP_BASE_URL=http://localhost:4000
+```text
+.
++-- package.json
++-- public/
++-- src/
+|   +-- Components/
+|   +-- Pages/
+|   +-- Services/
+|   +-- Slices/
+|   `-- SocketManager.jsx
+`-- server/
+    +-- App.js
+    +-- Configuration/
+    +-- Controllers/
+    +-- Middlewares/
+    +-- Modals/
+    +-- Routes/
+    +-- Socket/
+    `-- Utils/
 ```
 
-### Backend `server/.env`
+## Getting Started
 
-Create `server/.env`:
-
-```env
-PORT_NO=4000
-DB_URL=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-FRONTEND_URL=http://localhost:3000
-
-CLOUD_NAME=your_cloudinary_cloud_name
-API_KEY=your_cloudinary_api_key
-API_SECRET=your_cloudinary_api_secret
-
-HOST_NAME=smtp.your-provider.com
-MAIL_USER=your_email_address
-MAIL_PASS=your_email_password_or_app_password
-```
-
-## Installation
+### 1. Install dependencies
 
 Install frontend dependencies from the project root:
 
@@ -117,11 +115,34 @@ cd server
 npm install
 ```
 
-## Running The Project
+### 2. Configure environment variables
 
-### Run frontend and backend together
+Create a `.env` file in the project root:
 
-From the project root:
+```env
+REACT_APP_BASE_URL=
+```
+
+Create a `server/.env` file:
+
+```env
+PORT_NO=
+DB_URL=
+JWT_SECRET=
+FRONTEND_URL=
+CLOUD_NAME=
+API_KEY=
+API_SECRET=
+HOST_NAME=
+MAIL_USER=
+MAIL_PASS=
+```
+
+Fill these values with your own local or deployment configuration. Do not commit real secrets to GitHub.
+
+### 3. Run the project
+
+Run frontend and backend together from the project root:
 
 ```bash
 npm run dev
@@ -132,22 +153,20 @@ This starts:
 - Frontend on `http://localhost:3000`
 - Backend on `http://localhost:4000`
 
-### Run them separately
-
-Frontend:
+Run them separately if needed:
 
 ```bash
 npm start
 ```
-
-Backend:
 
 ```bash
 cd server
 npm run dev
 ```
 
-## Main Frontend Routes
+## Application Routes
+
+### Frontend
 
 - `/` - Landing page
 - `/login` - Login page
@@ -157,42 +176,27 @@ npm run dev
 - `/dashboard/profile` - Profile page
 - `/dashboard/message` - Chat page
 
-## Main Backend API Routes
-
-Base URL:
-
-```text
-http://localhost:4000
-```
-
-Auth:
+### Backend API
 
 - `POST /Convoo/auth/send_otp`
 - `POST /Convoo/auth/signup`
 - `POST /Convoo/auth/login`
 - `POST /Convoo/auth/logout`
-
-Conversations:
-
 - `POST /Convoo/message/send_message/:id`
 - `GET /Convoo/message/recieve_messages/:id`
-
-Users:
-
 - `GET /Convoo/search_user/search`
 - `GET /Convoo/search_user/get_chatters`
 
-## How The App Works
+## How It Works
 
-1. A user enters an email to request an OTP.
-2. The backend generates and emails the OTP.
-3. The user signs up after OTP verification.
-4. The user logs in and receives a JWT token.
-5. Protected dashboard routes become available.
-6. Socket.IO connects the logged-in user for live updates.
-7. Messages are stored in MongoDB and delivered instantly to online recipients.
+1. A user requests an OTP using an email address.
+2. The backend generates and sends the OTP through the configured mail service.
+3. After verification, the user can create an account.
+4. Login returns a JWT token for protected access.
+5. Socket.IO connects the user for real-time updates.
+6. Messages are stored in MongoDB and pushed instantly to online recipients.
 
-## Scripts
+## Available Scripts
 
 From the project root:
 
@@ -204,17 +208,10 @@ From the project root:
 
 From `server/`:
 
-- `npm start` - Start backend with Node
-- `npm run dev` - Start backend with Nodemon
+- `npm start` - Start the backend with Node
+- `npm run dev` - Start the backend with Nodemon
 
-## Notes
-
-- The backend for this project lives inside the `server/` folder.
-- Cloudinary is configured in the backend and upload utilities already exist.
-- Some files in `src/Services` contain older or unused endpoints from another codebase, while the active chat flow uses the `Convoo` routes listed above.
-- There is no dedicated automated backend test suite configured yet.
-
-## Future Improvements
+## Roadmap
 
 - Typing indicators
 - Read receipts
@@ -222,3 +219,7 @@ From `server/`:
 - Persisted profile editing
 - `.env.example` files
 - Automated backend tests
+
+## Note
+
+This README intentionally uses blank environment placeholders instead of real values. Keep all credentials, database URLs, mail settings, and API secrets private.
