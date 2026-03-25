@@ -46,7 +46,8 @@ The repository contains the frontend in the project root and the backend inside 
     <td><img src="./Pictures/Screenshot%202026-03-25%20141435.png" alt="Convoo screenshot 4" width="100%" /></td>
   </tr>
   <tr>
-    <td colspan="2"><img src="./Pictures/Screenshot%202026-03-25%20141459.png" alt="Convoo screenshot 5" width="100%" /></td>
+    <td><img src="./Pictures/Screenshot%202026-03-25%20141459.png" alt="Convoo screenshot 5" width="100%" /></td>
+    <td><img src="./Pictures/Screenshot%202026-03-25%20142758.png" alt="Convoo screenshot 6" width="100%" /></td>
   </tr>
 </table>
 
