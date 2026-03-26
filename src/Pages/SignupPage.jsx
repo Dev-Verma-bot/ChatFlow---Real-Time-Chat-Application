@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaUser, FaEye, FaEyeSlash, FaEnvelope } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setSign_up_data } from "../Slices/AuthSlice";
 import { sendOtp } from "../Services/operations/authApi";
 
@@ -13,6 +13,7 @@ const SignupPage = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
 
   const { 
     register, 
@@ -24,6 +25,7 @@ const SignupPage = () => {
   const password = watch("password");
 
   const onSubmit = (data) => {
+    if (loading) return;
     const finalData = { ...data, role };
     dispatch(setSign_up_data(finalData));
     dispatch(sendOtp(data.email, navigate));
@@ -46,6 +48,7 @@ const SignupPage = () => {
             <button 
               type="button" 
               onClick={() => setRole("User")} 
+              disabled={loading}
               className={`flex-1 py-2.5 text-[10px] font-black tracking-[0.2em] rounded-lg transition-all duration-300 z-10 ${
                 role === "User" 
                 ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]" 
@@ -57,6 +60,7 @@ const SignupPage = () => {
             <button 
               type="button" 
               onClick={() => setRole("Admin")} 
+              disabled={loading}
               className={`flex-1 py-2.5 text-[10px] font-black tracking-[0.2em] rounded-lg transition-all duration-300 z-10 ${
                 role === "Admin" 
                 ? "bg-purple-600 text-white shadow-[0_0_15px_rgba(147,51,234,0.5)]" 
@@ -103,7 +107,7 @@ const SignupPage = () => {
                   <label className="text-xs uppercase text-gray-400 font-bold">Password</label>
                   <div className="flex items-center gap-3">
                     <input {...register("password", { required: "Password is required" })} type={showPassword ? "text" : "password"} className="w-full bg-transparent py-2 text-white outline-none text-base" />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="text-gray-500 hover:text-purple-400">{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={loading} className="text-gray-500 hover:text-purple-400">{showPassword ? <FaEyeSlash /> : <FaEye />}</button>
                   </div>
                 </div>
                 {errors.password && <span className="text-[10px] text-red-500 mt-1 font-bold uppercase tracking-tighter">{errors.password.message}</span>}
@@ -120,7 +124,7 @@ const SignupPage = () => {
                       type={showConfirmPassword ? "text" : "password"} 
                       className="w-full bg-transparent py-2 text-white outline-none text-base" 
                     />
-                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="text-gray-500 hover:text-purple-400">{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</button>
+                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} disabled={loading} className="text-gray-500 hover:text-purple-400">{showConfirmPassword ? <FaEyeSlash /> : <FaEye />}</button>
                   </div>
                 </div>
                 {errors.confirmPassword && <span className="text-[10px] text-red-500 mt-1 font-bold uppercase tracking-tighter">{errors.confirmPassword.message}</span>}
@@ -141,8 +145,8 @@ const SignupPage = () => {
               {errors.gender && <span className="text-[10px] text-red-500 font-bold uppercase tracking-tighter">{errors.gender.message}</span>}
             </div>
 
-            <button type="submit" className="w-full py-4 mt-2 rounded-xl font-black text-xs tracking-[0.25em] text-white bg-gradient-to-r from-[#4b10b0] via-[#7b2ff7] to-[#4b10b0] bg-[length:200%_auto] hover:bg-right shadow-[0_10px_40px_rgba(123,47,247,0.4)] transition-all duration-500 uppercase active:scale-95">
-              REGISTER AS {role}
+            <button type="submit" disabled={loading} className="w-full py-4 mt-2 rounded-xl font-black text-xs tracking-[0.25em] text-white bg-gradient-to-r from-[#4b10b0] via-[#7b2ff7] to-[#4b10b0] bg-[length:200%_auto] hover:bg-right shadow-[0_10px_40px_rgba(123,47,247,0.4)] transition-all duration-500 uppercase active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed">
+              {loading ? "PLEASE WAIT..." : `REGISTER AS ${role}`}
             </button>
           </form>
 

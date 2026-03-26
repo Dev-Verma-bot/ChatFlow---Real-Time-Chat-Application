@@ -13,7 +13,7 @@ const OTPPage = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { signupData } = useSelector((state) => state.auth);
+  const { signupData, loading } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!signupData) navigate("/signup");
@@ -28,6 +28,7 @@ const OTPPage = () => {
   }, [timer]);
 
   const handleResend = () => {
+    if (loading) return;
     setTimer(59);
     setOtp("");
     setError("");
@@ -36,6 +37,7 @@ const OTPPage = () => {
 
   const handleVerify = (e) => {
     e.preventDefault();
+    if (loading) return;
 
     if (!userName.trim()) {
       setError("Username is required");
@@ -97,6 +99,7 @@ const OTPPage = () => {
                   placeholder="Enter your username"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
+                  disabled={loading}
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-4 pl-12 pr-4 text-white outline-none focus:border-purple-500 focus:bg-white/10 transition-all font-medium"
                   required
                 />
@@ -114,6 +117,7 @@ const OTPPage = () => {
                   if (!/^\d*$/.test(value)) return;
                   setOtp(value);
                 }}
+                isDisabled={loading}
                 numInputs={6}
                 shouldAutoFocus
                 inputType="tel"
@@ -140,9 +144,10 @@ const OTPPage = () => {
             <div className="space-y-6">
               <button
                 type="submit"
-                className="w-full py-4 rounded-xl font-black text-xs tracking-[0.25em] text-white bg-gradient-to-r from-[#4b10b0] via-[#7b2ff7] to-[#4b10b0] bg-[length:200%_auto] hover:bg-right shadow-[0_10px_40px_rgba(123,47,247,0.4)] transition-all uppercase active:scale-95"
+                disabled={loading}
+                className="w-full py-4 rounded-xl font-black text-xs tracking-[0.25em] text-white bg-gradient-to-r from-[#4b10b0] via-[#7b2ff7] to-[#4b10b0] bg-[length:200%_auto] hover:bg-right shadow-[0_10px_40px_rgba(123,47,247,0.4)] transition-all uppercase active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Confirm & Complete
+                {loading ? "VERIFYING..." : "Confirm & Complete"}
               </button>
 
               <div className="text-center">
@@ -155,7 +160,8 @@ const OTPPage = () => {
                   <button
                     type="button"
                     onClick={handleResend}
-                    className="text-xs text-purple-400 font-black uppercase tracking-widest underline underline-offset-8 hover:text-purple-300 transition-colors"
+                    disabled={loading}
+                    className="text-xs text-purple-400 font-black uppercase tracking-widest underline underline-offset-8 hover:text-purple-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     Resend Code
                   </button>

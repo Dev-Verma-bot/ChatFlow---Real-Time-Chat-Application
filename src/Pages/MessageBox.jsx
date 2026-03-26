@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessage } from "../Services/operations/ConversatationApi";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ const MessageBox = () => {
     
     // 2. Determine if the current selected user is online
     const isOnline = onlineUsers?.includes(String(selectedChat?._id));
+    const [isSending, setIsSending] = useState(false);
 
     const scrollRef = useRef(null);
     const { register, handleSubmit, reset } = useForm();
@@ -28,10 +29,15 @@ const MessageBox = () => {
         }
     }, [selectedChat?._id, token, dispatch]);
 
-    const onSendMessage = (data) => {
-        if (data.message.trim() === "") return;
-        dispatch(sendMessage(selectedChat._id, data.message, token));
-        reset();
+    const onSendMessage = async (data) => {
+        if (isSending || data.message.trim() === "") return;
+        setIsSending(true);
+        try {
+            await dispatch(sendMessage(selectedChat._id, data.message, token));
+            reset();
+        } finally {
+            setIsSending(false);
+        }
     };
 
     const formatDividerDate = (dateString) => {
@@ -142,11 +148,13 @@ const MessageBox = () => {
                         {...register("message")}
                         autoComplete="off"
                         placeholder="Type a message..."
+                        disabled={isSending}
                         className="flex-1 bg-transparent border-none outline-none px-4 text-sm text-white placeholder:text-gray-700"
                     />
                     <button 
                         type="submit" 
-                        className="h-10 w-10 rounded-xl bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shadow-lg shadow-purple-600/20 transition-all active:scale-95"
+                        disabled={isSending}
+                        className="h-10 w-10 rounded-xl bg-purple-600 hover:bg-purple-500 text-white flex items-center justify-center shadow-lg shadow-purple-600/20 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                         <IoSend className="text-lg" />
                     </button>

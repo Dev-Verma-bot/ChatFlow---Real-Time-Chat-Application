@@ -70,6 +70,7 @@ const ContactSidebar = () => {
                         <button
                             key={tab}
                             onClick={() => { setActiveTab(tab); clearSearch(); }}
+                            disabled={loading}
                             className={`flex-1 py-2 text-[9px] sm:text-[10px] font-black rounded-lg transition-all uppercase ${
                                 activeTab === tab 
                                 ? "bg-gradient-to-r from-[#4b10b0] to-[#7b2ff7] text-white" 
@@ -88,9 +89,10 @@ const ContactSidebar = () => {
                         type="text"
                         {...register("searchField")} 
                         placeholder="Search users..."
+                        disabled={loading}
                         className="w-full bg-transparent py-1.5 sm:py-3 px-2 text-[10px] sm:text-sm text-white outline-none"
                     />
-                    <button type="submit">
+                    <button type="submit" disabled={loading}>
                         <HiSearch className="mr-2 text-gray-600 hover:text-purple-400 text-sm sm:text-lg" />
                     </button>
                 </div>
@@ -107,8 +109,8 @@ const ContactSidebar = () => {
                         return (
                             <div 
                                 key={user._id} 
-                                onClick={() => handle_selected_user(user)}
-                                className={`group relative rounded-xl transition-all cursor-pointer ${
+                                onClick={() => !loading && handle_selected_user(user)}
+                                className={`group relative rounded-xl transition-all ${loading ? "cursor-not-allowed opacity-70" : "cursor-pointer"} ${
                                     selectedChat?._id === user._id ? "bg-white/[0.1]" : "hover:bg-white/[0.05]"
                                 }`}
                             >

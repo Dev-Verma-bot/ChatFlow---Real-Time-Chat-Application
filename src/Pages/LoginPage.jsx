@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Login } from "../Services/operations/authApi";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   
@@ -17,6 +18,7 @@ const LoginPage = () => {
   } = useForm();
 
   const onSubmit = (data) => {
+    if (loading) return;
    console.log("Login Data:", data);
     dispatch(Login(data, navigate));
   };
@@ -74,6 +76,7 @@ const LoginPage = () => {
                   <button 
                     type="button" 
                     onClick={() => setShowPassword(!showPassword)} 
+                    disabled={loading}
                     className="text-gray-500 hover:text-purple-400 transition"
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
@@ -89,12 +92,13 @@ const LoginPage = () => {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-4 mt-6 rounded-xl font-black text-xs tracking-[0.25em] text-white 
                 bg-gradient-to-r from-[#4b10b0] via-[#7b2ff7] to-[#4b10b0] bg-[length:200%_auto] 
                 hover:bg-right shadow-[0_10px_40px_rgba(123,47,247,0.4)] transition-all duration-500 
-                uppercase active:scale-95"
+                uppercase active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Sign In
+              {loading ? "SIGNING IN..." : "Sign In"}
             </button>
           </form>
 
