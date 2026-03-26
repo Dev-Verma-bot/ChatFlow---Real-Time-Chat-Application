@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { getMessages, sendMessage } from "../Services/operations/ConversatationApi";
 import { useForm } from "react-hook-form";
-import { IoSend, IoCallOutline, IoSettingsOutline, IoLockClosedOutline } from "react-icons/io5";
+import { IoSend, IoLockClosedOutline } from "react-icons/io5";
 
 const MessageBox = () => {
     const dispatch = useDispatch();
@@ -80,8 +80,8 @@ const MessageBox = () => {
                     </div>
                 </div>
                 <div className="flex items-center gap-3 text-gray-400">
-                    <IoCallOutline className="text-xl cursor-pointer hover:text-purple-400 transition-colors" />
-                    <IoSettingsOutline className="text-xl cursor-pointer hover:text-purple-400 transition-colors" />
+                    {/* <IoCallOutline className="text-xl cursor-pointer hover:text-purple-400 transition-colors" /> */}
+                    {/* <IoSettingsOutline className="text-xl cursor-pointer hover:text-purple-400 transition-colors" /> */}
                 </div>
             </div>
 

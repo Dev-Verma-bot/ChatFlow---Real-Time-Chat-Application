@@ -20,9 +20,9 @@ const Navbar = () => {
 
         <div className="flex items-center gap-8">
           <div className="hidden items-center gap-6 text-sm font-medium text-slate-400 md:flex">
-            <Link to="/features" className="hover:text-white transition">Features</Link>
-            <Link to="/how-it-works" className="hover:text-white transition">How It Works</Link>
-            <Link to="/pricing" className="hover:text-white transition">Pricing</Link>
+            {/* <Link to="/features" className="hover:text-white transition">Features</Link> */}
+            {/* <Link to="/how-it-works" className="hover:text-white transition">How It Works</Link> */}
+            {/* <Link to="/pricing" className="hover:text-white transition">Pricing</Link> */}
           </div>
 
           <div className="flex items-center gap-4">

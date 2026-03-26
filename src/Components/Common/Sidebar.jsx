@@ -5,8 +5,8 @@ import { logout } from '../../Slices/AuthSlice';
 import chat from "../../assets/Images/chat.png";
 import { 
   HiOutlineUserCircle, HiOutlineChatAlt2, 
-  HiOutlineCog, HiOutlineLogout,
-  HiOutlineStar, HiMenuAlt2, HiX 
+  HiOutlineLogout,
+  HiMenuAlt2, HiX 
 } from 'react-icons/hi';
 
 const Sidebar = () => {
@@ -89,8 +89,8 @@ const Sidebar = () => {
           {[
             { to: "/dashboard", icon: <HiOutlineChatAlt2 />, label: "MESSAGES" },
             { to: "/dashboard/profile", icon: <HiOutlineUserCircle />, label: "MY PROFILE" },
-            { to: "/dashboard/favourites", icon: <HiOutlineStar />, label: "FAVOURITES" },
-            { to: "/dashboard/settings", icon: <HiOutlineCog />, label: "SETTINGS" },
+            // { to: "/dashboard/favourites", icon: <HiOutlineStar />, label: "FAVOURITES" },
+            // { to: "/dashboard/settings", icon: <HiOutlineCog />, label: "SETTINGS" },
           ].map((link) => (
             <Link 
               key={link.to}
