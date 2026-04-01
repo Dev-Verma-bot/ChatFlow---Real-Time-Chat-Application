@@ -64,8 +64,8 @@ const send_message = async (req, res) => {
 
 const recieve_messages = async (req, res) => {
     try {
-        const { id: receiver_id } = req.params; 
-        const sender_id= req.user.id
+        const { id: receiver_id } = req.params; // sender
+        const sender_id= req.user.id //curr user 
 
         console.log(sender_id);
         if (!receiver_id) {
