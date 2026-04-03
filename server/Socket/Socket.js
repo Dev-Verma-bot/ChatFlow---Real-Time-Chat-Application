@@ -21,6 +21,7 @@ const usersocketmap= {}; //reciever socket id
 
 // whenever the user open the app connection established until it not close the app 
 io.on('connection',(socket)=>{
+    // console.log("unique created socket -> ",socket);
     // frontend send the userid using the handshake (fetching that user id )
     const userID= socket.handshake.query.userId;
     console.log("user id is this ->",userID);

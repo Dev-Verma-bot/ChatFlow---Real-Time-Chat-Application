@@ -1,6 +1,6 @@
 <div align="center">
 
-# Convoo
+# ChatFlow
 
 Real-time one-to-one chat application built with React, Redux Toolkit, Express, MongoDB, and Socket.IO.
 
